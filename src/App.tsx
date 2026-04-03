@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TimelineEvent, TimelineProject } from './types';
 import { TimelineView } from './components/TimelineView';
 import { TimelineEditor } from './components/TimelineEditor';
 import { ProjectDashboard } from './components/ProjectDashboard';
-import { History, Download, Share2, Info, Calendar, ArrowLeft, Save } from 'lucide-react';
+import { History, Download, Share2, Info, Calendar, ArrowLeft, Save, Check, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { cn } from './lib/utils';
 
 export default function App() {
   const [projects, setProjects] = useState<TimelineProject[]>(() => {
@@ -12,6 +14,12 @@ export default function App() {
   });
 
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('timeline-projects', JSON.stringify(projects));
@@ -29,13 +37,48 @@ export default function App() {
     };
     setProjects(prev => [newProject, ...prev]);
     setActiveProjectId(newProject.id);
+    showToast('Nouvelle frise créée');
   };
 
   const handleDeleteProject = (id: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette frise ?')) {
       setProjects(prev => prev.filter(p => p.id !== id));
       if (activeProjectId === id) setActiveProjectId(null);
+      showToast('Frise supprimée');
     }
+  };
+
+  const handleExport = () => {
+    if (!activeProject) {
+      // Export all projects if on dashboard
+      const dataStr = JSON.stringify(projects, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      const exportFileDefaultName = 'chronos-studio-projects.json';
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+      showToast('Tous les projets exportés');
+      return;
+    }
+
+    const dataStr = JSON.stringify(activeProject, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `${activeProject.name.toLowerCase().replace(/\s+/g, '-')}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+    showToast('Frise exportée');
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      showToast('Lien copié dans le presse-papier');
+    }).catch(() => {
+      showToast('Erreur lors de la copie du lien', 'error');
+    });
   };
 
   const handleUpdateProjectName = (name: string) => {
@@ -90,10 +133,18 @@ export default function App() {
                 <span className="hidden xs:inline">Dashboard</span>
               </button>
             )}
-            <button className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors">
+            <button 
+              onClick={handleExport}
+              className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors"
+              title="Exporter en JSON"
+            >
               <Download className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
-            <button className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors">
+            <button 
+              onClick={handleShare}
+              className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors"
+              title="Partager le lien"
+            >
               <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
@@ -234,6 +285,23 @@ export default function App() {
           </div>
         </div>
       </footer>
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            className={cn(
+              "fixed bottom-8 left-1/2 z-[100] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border",
+              toast.type === 'success' ? "bg-zinc-900 border-zinc-800 text-white" : "bg-red-600 border-red-500 text-white"
+            )}
+          >
+            {toast.type === 'success' ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+            <span className="text-sm font-medium">{toast.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

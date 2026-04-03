@@ -70,7 +70,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
                     e.stopPropagation();
                     onDeleteProject(project.id);
                   }}
-                  className="p-2 text-zinc-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                  className="p-2 text-zinc-300 hover:text-red-500 transition-colors md:opacity-0 md:group-hover:opacity-100"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
