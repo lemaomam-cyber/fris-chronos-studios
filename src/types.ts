@@ -5,6 +5,7 @@ export interface TimelineEvent {
   startYear: number;
   endYear?: number;
   color: string;
+  imageUrl?: string;
 }
 
 export interface TimelineProject {
@@ -13,4 +14,7 @@ export interface TimelineProject {
   description?: string;
   updatedAt: number;
   events: TimelineEvent[];
+  scaleInterval?: number; // Gap between graduation marks (e.g., 10 years, 50 years)
+  customMinYear?: number;
+  customMaxYear?: number;
 }

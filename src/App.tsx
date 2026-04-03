@@ -93,6 +93,24 @@ export default function App() {
     ));
   };
 
+  const handleUpdateScale = (scaleInterval: number) => {
+    setProjects(prev => prev.map(p => 
+      p.id === activeProjectId ? { ...p, scaleInterval, updatedAt: Date.now() } : p
+    ));
+  };
+
+  const handleUpdateMinYear = (customMinYear: number | undefined) => {
+    setProjects(prev => prev.map(p => 
+      p.id === activeProjectId ? { ...p, customMinYear, updatedAt: Date.now() } : p
+    ));
+  };
+
+  const handleUpdateMaxYear = (customMaxYear: number | undefined) => {
+    setProjects(prev => prev.map(p => 
+      p.id === activeProjectId ? { ...p, customMaxYear, updatedAt: Date.now() } : p
+    ));
+  };
+
   const handleAddEvent = (event: TimelineEvent) => {
     setProjects(prev => prev.map(p => 
       p.id === activeProjectId 
@@ -210,7 +228,12 @@ export default function App() {
                 </div>
               </div>
               <div className="relative">
-                <TimelineView events={activeProject?.events || []} />
+                <TimelineView 
+                  events={activeProject?.events || []} 
+                  scaleInterval={activeProject?.scaleInterval}
+                  customMinYear={activeProject?.customMinYear}
+                  customMaxYear={activeProject?.customMaxYear}
+                />
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 md:hidden pointer-events-none">
                   <span className="text-[9px] font-mono text-zinc-400 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full border border-zinc-100">
                     Faites défiler horizontalement →
@@ -230,6 +253,12 @@ export default function App() {
                 events={activeProject?.events || []} 
                 onAddEvent={handleAddEvent} 
                 onDeleteEvent={handleDeleteEvent} 
+                scaleInterval={activeProject?.scaleInterval}
+                onUpdateScale={handleUpdateScale}
+                customMinYear={activeProject?.customMinYear}
+                onUpdateMinYear={handleUpdateMinYear}
+                customMaxYear={activeProject?.customMaxYear}
+                onUpdateMaxYear={handleUpdateMaxYear}
               />
             </section>
           </div>
