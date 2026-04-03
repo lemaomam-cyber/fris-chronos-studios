@@ -186,22 +186,39 @@ export const TimelineEditor: React.FC<TimelineEditorProps> = ({
 
             <div>
               <label className="block text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-zinc-400 mb-1.5">
-                Couleur
+                Couleur de l'événement
               </label>
-              <div className="flex flex-wrap gap-2">
-                {COLORS.map(color => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => setNewEvent({ ...newEvent, color })}
-                    className={cn(
-                      "w-7 h-7 rounded-full border-2 transition-all",
-                      newEvent.color === color ? "border-zinc-900 scale-110 shadow-md" : "border-transparent"
-                    )}
-                    style={{ backgroundColor: color }}
+              <div className="flex items-center gap-4">
+                <div className="flex flex-wrap gap-2 flex-1">
+                  {COLORS.slice(0, 5).map(color => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setNewEvent({ ...newEvent, color })}
+                      className={cn(
+                        "w-8 h-8 rounded-full border-2 transition-all",
+                        newEvent.color === color ? "border-zinc-900 scale-110 shadow-md" : "border-transparent"
+                      )}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+                <div className="relative shrink-0">
+                  <input
+                    type="color"
+                    value={newEvent.color}
+                    onChange={e => setNewEvent({ ...newEvent, color: e.target.value })}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
-                ))}
+                  <div 
+                    className="w-10 h-10 rounded-xl border-2 border-zinc-200 shadow-sm flex items-center justify-center bg-white hover:border-zinc-900 transition-colors"
+                    style={{ borderLeftColor: newEvent.color, borderLeftWidth: '6px' }}
+                  >
+                    <Palette className="w-5 h-5 text-zinc-400" />
+                  </div>
+                </div>
               </div>
+              <p className="text-[9px] text-zinc-400 mt-2 italic">Cliquez sur l'icône palette pour choisir une couleur personnalisée</p>
             </div>
 
             <button
