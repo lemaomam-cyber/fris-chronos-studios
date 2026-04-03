@@ -13,6 +13,7 @@ interface TimelineEditorProps {
   onUpdateMinYear: (year: number | undefined) => void;
   customMaxYear?: number;
   onUpdateMaxYear: (year: number | undefined) => void;
+  showToast: (message: string, type: 'success' | 'error') => void;
 }
 
 const COLORS = [
@@ -34,7 +35,8 @@ export const TimelineEditor: React.FC<TimelineEditorProps> = ({
   customMinYear,
   onUpdateMinYear,
   customMaxYear,
-  onUpdateMaxYear
+  onUpdateMaxYear,
+  showToast
 }) => {
   const [newEvent, setNewEvent] = useState<Partial<TimelineEvent>>({
     title: '',
@@ -58,15 +60,40 @@ export const TimelineEditor: React.FC<TimelineEditorProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const startYear = typeof newEvent.startYear === 'string' ? parseInt(newEvent.startYear) : newEvent.startYear;
+    const endYear = typeof newEvent.endYear === 'string' ? parseInt(newEvent.endYear) : newEvent.endYear;
     
     if (!newEvent.title || startYear === undefined || isNaN(startYear)) {
       return;
     }
 
+    // Validation against manual scale bounds
+    if (customMinYear !== undefined && startYear < customMinYear) {
+      showToast(`L'année de début (${startYear}) est en dehors de votre frise (min: ${customMinYear})`, 'error');
+      return;
+    }
+    if (customMaxYear !== undefined && startYear > customMaxYear) {
+      showToast(`L'année de début (${startYear}) est en dehors de votre frise (max: ${customMaxYear})`, 'error');
+      return;
+    }
+    if (endYear !== undefined) {
+      if (customMinYear !== undefined && endYear < customMinYear) {
+        showToast(`L'année de fin (${endYear}) est en dehors de votre frise (min: ${customMinYear})`, 'error');
+        return;
+      }
+      if (customMaxYear !== undefined && endYear > customMaxYear) {
+        showToast(`L'année de fin (${endYear}) est en dehors de votre frise (max: ${customMaxYear})`, 'error');
+        return;
+      }
+      if (endYear < startYear) {
+        showToast(`L'année de fin ne peut pas être avant l'année de début`, 'error');
+        return;
+      }
+    }
+
     onAddEvent({
       ...newEvent as TimelineEvent,
       startYear,
-      endYear: newEvent.endYear,
+      endYear,
       id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
     });
 
