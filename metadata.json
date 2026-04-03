@@ -1,0 +1,5 @@
+{
+  "name": "Générateur de Frises Chronologiques",
+  "description": "Un outil interactif pour créer des frises chronologiques historiques avec calcul automatique des durées et des intervalles.",
+  "requestFramePermissions": []
+}
