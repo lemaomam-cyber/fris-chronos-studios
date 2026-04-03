@@ -15,6 +15,7 @@ export default function App() {
 
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [showDedication, setShowDedication] = useState(false);
 
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
@@ -311,10 +312,50 @@ export default function App() {
           </p>
           <div className="flex gap-6">
             <a href="#" className="text-zinc-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-mono">Aide</a>
-            <a href="#" className="text-zinc-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-mono">Confidentialité</a>
+            <button 
+              onClick={() => setShowDedication(true)}
+              className="text-zinc-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-mono cursor-pointer"
+            >
+              Confidentialité
+            </button>
           </div>
         </div>
       </footer>
+      {/* Dedication Modal */}
+      <AnimatePresence>
+        {showDedication && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowDedication(false)}
+              className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative bg-white w-full max-w-md p-8 rounded-3xl shadow-2xl text-center"
+            >
+              <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Info className="w-8 h-8 text-zinc-900" />
+              </div>
+              <h3 className="font-serif text-3xl font-bold text-zinc-900 mb-4">Note Spéciale</h3>
+              <p className="text-xl font-serif italic text-zinc-600 leading-relaxed mb-8">
+                "Dédicace à M. Rol et mes profs d'histoire ETM"
+              </p>
+              <button
+                onClick={() => setShowDedication(false)}
+                className="w-full py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-zinc-800 transition-colors"
+              >
+                Fermer
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
