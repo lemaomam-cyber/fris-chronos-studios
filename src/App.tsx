@@ -343,7 +343,7 @@ export default function App() {
               </div>
               <h3 className="font-serif text-3xl font-bold text-zinc-900 mb-4">Note Spéciale</h3>
               <p className="text-xl font-serif italic text-zinc-600 leading-relaxed mb-8">
-                "Dédicace à M. Rol et mes profs d'histoire ETM"
+                "Dédicace à mes profs d'histoire ETM"
               </p>
               <button
                 onClick={() => setShowDedication(false)}
