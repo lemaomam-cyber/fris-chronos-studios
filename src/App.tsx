@@ -29,7 +29,7 @@ export default function App() {
 
   const handleCreateProject = () => {
     const newProject: TimelineProject = {
-      id: crypto.randomUUID(),
+      id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
       name: `Nouvelle Frise ${projects.length + 1}`,
       description: 'Une nouvelle exploration historique.',
       updatedAt: Date.now(),
@@ -173,13 +173,13 @@ export default function App() {
                 </button>
                 <input 
                   type="text"
-                  value={activeProject?.name}
+                  value={activeProject?.name || ''}
                   onChange={(e) => handleUpdateProjectName(e.target.value)}
                   className="text-3xl sm:text-4xl md:text-6xl font-serif font-bold tracking-tight leading-tight mb-2 bg-transparent border-none outline-none focus:ring-0 w-full p-0"
                   placeholder="Nom de la frise"
                 />
                 <textarea 
-                  value={activeProject?.description}
+                  value={activeProject?.description || ''}
                   onChange={(e) => handleUpdateProjectDescription(e.target.value)}
                   className="text-zinc-500 text-base sm:text-lg bg-transparent border-none outline-none focus:ring-0 w-full p-0 resize-none min-h-[60px]"
                   placeholder="Ajoutez une description..."

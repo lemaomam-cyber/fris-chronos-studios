@@ -29,11 +29,17 @@ export const TimelineEditor: React.FC<TimelineEditorProps> = ({ events, onAddEve
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newEvent.title || newEvent.startYear === undefined) return;
+    const startYear = typeof newEvent.startYear === 'string' ? parseInt(newEvent.startYear) : newEvent.startYear;
+    
+    if (!newEvent.title || startYear === undefined || isNaN(startYear)) {
+      return;
+    }
 
     onAddEvent({
       ...newEvent as TimelineEvent,
-      id: crypto.randomUUID(),
+      startYear,
+      endYear: newEvent.endYear,
+      id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
     });
 
     setNewEvent({
